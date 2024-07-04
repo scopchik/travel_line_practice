@@ -1,16 +1,6 @@
-﻿string SuccessOrder( string name, string product, string count, string address, string todaysDate, string datePlusThreeDays )
-{
-    return $"{name}! Ваш заказ {product} в количестве {count} оформлен! Ожидайте доставку по адресу {address} к {todaysDate} + {datePlusThreeDays}";
-}
-
-string AcceptOrder( string name, string product, string count, string address )
-{
-    return $"Здравствуйте, {name}, вы заказали {count} {product} на адрес {address}, все верно?";
-}
-
 DateTime nowDate = DateTime.Today;
-string todaysDate = thisDate.ToString( "d" );
-string datePlusThreeDays = nowDate.AddDays( 3 ).ToString( "d" );
+string nowDateString = nowDate.ToString( "d" );
+string deliveryDateString = nowDate.AddDays( 3 ).ToString( "d" );
 
 Console.Write( "Введите ваше имя: " );
 string name = Console.ReadLine();
@@ -39,3 +29,12 @@ else
     Console.WriteLine( "Отмена заказа" );
 }
 
+﻿string SuccessOrder( string name, string product, string count, string address, string todaysDate, string datePlusThreeDays )
+{
+    return $"{name}! Ваш заказ {product} в количестве {count} оформлен! Ожидайте доставку по адресу {address} к {todaysDate} + {datePlusThreeDays}";
+}
+
+string AcceptOrder( string name, string product, string count, string address )
+{
+    return $"Здравствуйте, {name}, вы заказали {count} {product} на адрес {address}, все верно?";
+}
