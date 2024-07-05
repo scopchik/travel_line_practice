@@ -10,9 +10,9 @@ while ( true )
     Console.WriteLine( "2. Добавить новое слово" );
     Console.WriteLine( "3. Выйти" );
 
-    string choice = Console.ReadLine();
+    string command = Console.ReadLine();
 
-    switch ( choice )
+    switch ( command )
     {
         case "1":
             TranslateWord();
@@ -39,9 +39,9 @@ void LoadDictionaryFromFile()
 
     try
     {
-        foreach ( var line in File.ReadAllLines( filePath ) )
+        foreach ( string? line in File.ReadAllLines( filePath ) )
         {
-            var parts = line.Split( ':' );
+            string[] parts = line.Split( ':' );
             if ( parts.Length == 2 )
             {
                 dictionary[ parts[ 0 ].Trim() ] = parts[ 1 ].Trim();
@@ -78,19 +78,18 @@ void TranslateWord()
 void AddNewWord()
 {
     Console.Write( "Введите слово на русском: " );
-    string russianWord = Console.ReadLine().Trim();
-
-    Console.Write( "Введите перевод на английском: " );
-    string englishTranslation = Console.ReadLine().Trim();
+    string russianWord = Console.ReadLine().Trim().ToLower();
 
     if ( !dictionary.ContainsKey( russianWord ) )
     {
+        Console.Write( "Введите перевод на английском: " );
+        string englishTranslation = Console.ReadLine().Trim();
         dictionary[ russianWord ] = englishTranslation;
         Console.WriteLine( "Слово добавлено в словарь." );
     }
     else
     {
-        Console.WriteLine( "Слово уже существует в словаре." );
+        Console.WriteLine( $"Слово уже существует в словаре. Вот его перевод: {dictionary[russianWord]}" );
     }
 }
 
@@ -108,7 +107,7 @@ void SaveDictionaryToFile()
     {
         using ( StreamWriter writer = new StreamWriter( filePath ) )
         {
-            foreach ( var entry in dictionary )
+            foreach ( KeyValuePair<string, string> entry in dictionary )
             {
                 writer.WriteLine( $"{entry.Key}:{entry.Value}" );
             }
