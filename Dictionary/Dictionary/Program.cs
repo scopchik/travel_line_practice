@@ -59,11 +59,7 @@ void TranslateWord()
     Console.Write( "Введите слово для перевода: " );
     string word = Console.ReadLine().Trim().ToLower();
 
-    if ( dictionary.ContainsKey( word ) )
-    {
-        Console.WriteLine( $"Перевод: {dictionary[ word ]}" );
-    }
-    else
+    if ( !dictionary.ContainsKey( word ) )
     {
         Console.WriteLine( "Слово не найдено в словаре." );
         Console.Write( "Хотите добавить новое слово? (да/нет): " );
@@ -72,6 +68,10 @@ void TranslateWord()
         {
             AddNewWordToDictionary( word );
         }
+    }
+    else
+    {
+        Console.WriteLine( $"Перевод: {dictionary[ word ]}" );
     }
 }
 
