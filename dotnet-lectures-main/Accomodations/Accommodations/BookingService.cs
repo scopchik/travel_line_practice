@@ -23,7 +23,7 @@ public class BookingService : IBookingService
 
     public Booking Book(int userId, string categoryName, DateTime startDate, DateTime endDate, Currency currency)
     {
-        if (endDate < startDate)
+        if (endDate <= startDate)
         {
             throw new ArgumentException("End date cannot be earlier than start date");
         }
@@ -101,7 +101,7 @@ public class BookingService : IBookingService
 
         query = query.Where(b => b.StartDate >= startDate);
 
-        query = query.Where(b => b.EndDate < endDate);
+        query = query.Where(b => b.EndDate <= endDate);
 
         if (!string.IsNullOrEmpty(categoryName))
         {
@@ -118,7 +118,7 @@ public class BookingService : IBookingService
             throw new ArgumentException("Start date cannot be earlier than now date");
         }
 
-        int daysBeforeArrival = (DateTime.Now - booking.StartDate).Days;
+        int daysBeforeArrival = Math.Max((booking.StartDate - DateTime.Now).Days, 1);
 
         return 5000.0m / daysBeforeArrival;
     }
@@ -137,10 +137,11 @@ public class BookingService : IBookingService
         return currencyRate;
     }
 
+
     private static decimal CalculateBookingCost(decimal baseRate, int days, int userId, decimal currencyRate)
     {
-        decimal cost = baseRate * days;
-        decimal totalCost = cost - cost * CalculateDiscount(userId) * currencyRate;
+        decimal cost = baseRate / currencyRate * days;
+        decimal totalCost = cost - cost * CalculateDiscount(userId);
         return totalCost;
     }
 }

@@ -6,7 +6,6 @@ namespace Accommodations.Commands;
 public class BookCommand(IBookingService bookingService, BookingDto bookingDto) : ICommand
 {
     private Booking? _executedBookingDto;
-
     public void Execute()
     {
         Currency currency = bookingDto.Currency switch
@@ -18,7 +17,7 @@ public class BookCommand(IBookingService bookingService, BookingDto bookingDto) 
         };
         _executedBookingDto = bookingService.Book(bookingDto.UserId, bookingDto.Category, bookingDto.StartDate,
             bookingDto.EndDate, currency);
-        Console.WriteLine($"Booking successful: ID {_executedBookingDto!.Id}");
+        Console.WriteLine($"Booking successful: ID {_executedBookingDto!.Id}, cost: {_executedBookingDto.Cost}");
     }
 
     public void Undo()
