@@ -4,17 +4,17 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Rooms')
 		room_id INT IDENTITY(1, 1) NOT NULL,
 		room_number INT NOT NULL,
 		room_type NVARCHAR(50) NOT NULL,
-		price_per_night INT NOT NULL,
-		availability NVARCHAR(50) NOT NULL,
+		price_per_night float NOT NULL,
+		availability bit NOT NULL,
 		CONSTRAINT PK_Rooms_room_id PRIMARY KEY (room_id)		
 	);
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'Customers')
 	CREATE TABLE dbo.Customers (
 		customer_id INT IDENTITY(1, 1) NOT NULL,
-		first_name NVARCHAR(100) NOT NULL,
-		last_name NVARCHAR(100) NOT NULL,
-		email NVARCHAR(100) NOT NULL,
+		first_name NVARCHAR(20) NOT NULL,
+		last_name NVARCHAR(30) NOT NULL,
+		email NVARCHAR(30) NOT NULL,
 		phone_number NVARCHAR(30) NOT NULL,
 		CONSTRAINT PK_Customers_customer_id PRIMARY KEY (customer_id)
 	);
@@ -65,12 +65,12 @@ VALUES
 
 INSERT INTO dbo.Rooms
 VALUES
-	(1, 'Single', 2500, 'Free'),
-	(15, 'Single', 2500, 'Busy'),
-	(20, 'Double', 3500, 'Busy'),
-	(30, 'Single', 2500, 'Busy'),
-	(40, 'Triple', 5500, 'Free'),
-	(50, 'Triple', 5500, 'Busy');
+	(1, 'Single', 2500, 'true'),
+	(15, 'Single', 2500, 'false'),
+	(20, 'Double', 3500, 'false'),
+	(30, 'Single', 2500, 'false'),
+	(40, 'Triple', 5500, 'true'),
+	(50, 'Triple', 5500, 'false');
 
 INSERT INTO dbo.RoomsToFacilities
 VALUES
@@ -93,26 +93,3 @@ VALUES
 	(2, 4, '2024-07-3', '2024-07-13'),
 	(3, 6, '2024-07-22', '2024-08-30');
 
-SELECT * FROM dbo.Rooms
-WHERE availability = 'Free';
-
-SELECT * FROM dbo.Customers
-WHERE last_name LIKE 'S%';
-
-/*Find all bookings for a specific customer (by name or email)*/
-SELECT * FROM dbo.Bookings B
-JOIN dbo.Customers C
-ON B.customer_id = C.customer_id
-WHERE C.first_name = 'Anatoly';
-
-/*Find all bookings for a specific room*/
-SELECT * FROM dbo.Bookings B
-JOIN dbo.Rooms R
-ON B.room_id = R.room_id
-WHERE R.room_number = 145;
-
-/*Find all rooms that are not booked for a specific date*/
-SELECT * FROM dbo.Rooms R
-JOIN dbo.Bookings B
-ON R.room_id = B.room_id
-WHERE ('2024-07-15' < B.check_in_date) OR (B.check_out_date > '2024-07-15');
