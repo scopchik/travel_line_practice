@@ -15,3 +15,5 @@ AccommodationsProcessor.cs
 1)BookCommand.cs строка 20 добавил отображение стоимости брони
 Пользовательский ввод:
 2)BookingService.cs строка 26 дата начала заезда не должна быть равна дате выселения
+
+https://docs.google.com/document/d/18IUfvVCqKU3r-HAcaS0m4216OORaoNYNunwWK-WY-Kw/edit?hl=ru
