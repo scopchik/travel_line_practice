@@ -8,18 +8,16 @@ WHERE last_name LIKE 'S%';
 
 --поиск бронирования с определенным именем 
 SELECT * FROM dbo.Bookings B
-JOIN dbo.Customers C ON
-B.customer_id = C.customer_id
+JOIN dbo.Customers C ON B.customer_id = C.customer_id
 WHERE C.first_name = 'Anatoly';
 
 --поиск определенной комнаты
-SELECT * FROM dbo.Bookings B
-JOIN dbo.Rooms R ON 
-B.room_id = R.room_id
-WHERE R.room_number = 145;
+SELECT * FROM dbo.bookings
+JOIN dbo.rooms ON bookings.room_id = rooms.room_id
+WHERE rooms.room_number = 30;
 
 --поиск незаброннированной комнаты в определенные даты
-SELECT * FROM dbo.Rooms R
-JOIN dbo.Bookings B ON 
-R.room_id = B.room_id
-WHERE (('2024-07-15' < B.check_in_date) OR (B.check_out_date > '2024-07-15')) and availability = 'true';
+SELECT * FROM dbo.rooms
+WHERE room_id IN (
+	SELECT room_id FROM dbo.bookings
+	WHERE check_in_date < '2024-08-08' AND check_out_date > '2024-08-08' and availability = 'true');
