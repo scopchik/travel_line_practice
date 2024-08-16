@@ -70,7 +70,7 @@ VALUES
 	(20, 'Double', 3500, 'false'),
 	(30, 'Single', 2500, 'false'),
 	(40, 'Triple', 5500, 'true'),
-	(50, 'Triple', 5500, 'false');
+	(50, 'Triple', 5500, 'true');
 
 INSERT INTO dbo.RoomsToFacilities
 VALUES
