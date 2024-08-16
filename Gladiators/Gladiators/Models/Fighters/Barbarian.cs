@@ -1,11 +1,8 @@
 ﻿using Fighters.Models.Fighters;
 
-public class Barbarian : StandartFighter
+public class Barbarian : IClass
 {
-    public Barbarian( IRace race, string name ) : base( race, name )
-    { }
-
-    public override string Class => "Barbarian";
-    public override int ClassDamage => 7;
-    public override int ClassHealth => 20;
+    public string Name => "Barbarian";
+    public int Damage => 7;
+    public int Health => 20;
 }

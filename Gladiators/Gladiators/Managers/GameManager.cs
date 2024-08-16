@@ -1,6 +1,6 @@
 ﻿using Fighters.Controller;
-using Fighters.Models.Fighters;
 using Fighters.Extensions;
+using Fighters.Models.Fighters;
 
 namespace Fighters.Managers;
 
@@ -22,17 +22,18 @@ public class GameManager : IGameManager
                 case "fight":
                     _fighterController.Fight();
                     break;
-                case "add":
+                case "add fighter":
                     _fighterController.CreateFighter();
+                    PrintMenu();
                     break;
-                case "show":
+                case "show fighters":
                     PrintFighterList();
                     break;
-                case "clear":
+                case "clear fighters":
                     _fighterController.Clear();
                     break;
                 case "help":
-                    PrintMenu();
+                    PrintHelp();
                     break;
                 case "exit":
                     isExit = true;
@@ -44,13 +45,21 @@ public class GameManager : IGameManager
         }
     }
 
+    private void PrintHelp()
+    {
+        Console.WriteLine( "To add a fighter use add fighter" );
+        Console.WriteLine( "To start a fight use fight" );
+        Console.WriteLine( "To show fighters use show fighters" );
+        Console.WriteLine( "To clear fighters use clear fighters" );
+    }
+
     private void PrintMenu()
     {
         Console.WriteLine( "Command list" );
         Console.WriteLine( "Fight" );
-        Console.WriteLine( "Add" );
-        Console.WriteLine( "Show" );
-        Console.WriteLine( "Clear" );
+        Console.WriteLine( "Add fighter" );
+        Console.WriteLine( "Show fighters" );
+        Console.WriteLine( "Clear fighters" );
         Console.WriteLine( "Help" );
         Console.WriteLine( "Exit" );
     }
@@ -67,7 +76,7 @@ public class GameManager : IGameManager
 
         for ( int i = 0; i < fighters.Count; i++ )
         {
-            Console.WriteLine( $"{i} - {fighters[ i ].Info()}" );
+            Console.WriteLine( $"{i} - {fighters[ i ].ToString()}" );
         }
     }
 }

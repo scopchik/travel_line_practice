@@ -1,9 +1,8 @@
 ﻿namespace Fighters.Models.Fighters;
 
-public interface IRace
+public interface IClass
 {
+    public string Name { get; }
     public int Damage { get; }
     public int Health { get; }
-    public int Armor { get; }
-    public string Race { get; }
 }

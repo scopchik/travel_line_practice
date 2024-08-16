@@ -1,36 +1,24 @@
-﻿using Fighters.Controller;
-using Fighters.Extensions;
-using Fighters.Models.Fighters;
-using Fighters.Models.Race;
+﻿using Fighters.Models.Fighters;
 
 namespace Fighters.Controller;
 
 public class FighterController : IFighterController
 {
     private List<IFighter> _fighters = new List<IFighter>();
-
     public List<IFighter> GetFighters() => _fighters;
 
-    public IFighter CreateFighter()
+    public void CreateFighter()
     {
         string name = GetFighterName();
         IRace race = GetRace();
-        IFighter fighter = GetFighterWithType( race, name );
+        IClass fightersClass = GetFighterClass(); // Добавлен метод для получения класса бойца
+        IArmor armor = GetArmor() ?? new NoArmor(); // Используем `NoArmor` по умолчанию, если броня не выбрана
+        IWeapon weapon = GetWeapon() ?? new Fists(); // Используем `Fists` по умолчанию, если оружие не выбрано
 
-        IArmor? armor = GetArmor();
-        if ( armor != null )
-        {
-            fighter.SetArmor( armor );
-        }
+        // Создание бойца через конструктор с передачей всех параметров
+        IFighter fighter = new StandartFighter( name, race, fightersClass, armor, weapon );
 
-        IWeapon? weapon = GetWeapon();
-        if ( weapon != null )
-        {
-            fighter.SetWeapon( weapon );
-        }
         _fighters.Add( fighter );
-
-        return fighter;
     }
 
     public void Clear()
@@ -41,45 +29,53 @@ public class FighterController : IFighterController
     public void Fight()
     {
         List<IFighter> leaveFighters = _fighters.Where( fighter => fighter.IsAlive() ).ToList();
+
         if ( leaveFighters.Count < 2 )
         {
             Console.WriteLine( "Number of living fighters < 2" );
             return;
         }
+
         Console.WriteLine( "Take number of first fighter who starts battle" );
         IFighter fighter1 = GetFighter();
         Console.WriteLine( "Choose second fighter" );
         IFighter fighter2 = GetFighter();
+
         while ( fighter1 == fighter2 )
         {
             Console.WriteLine( "First fighter can't fight with himself" );
             fighter2 = GetFighter();
         }
+
         bool hasWinner = false;
         while ( !hasWinner )
         {
             int firstFighterDamage = fighter1.CalculateDamage();
             int receivedBySecondFighterDamage = fighter2.TakeDamage( firstFighterDamage );
+
             if ( !fighter2.IsAlive() )
             {
                 Console.WriteLine( $"The second fighter {fighter2.Name}. DEAD" );
                 hasWinner = true;
                 continue;
             }
+
             Console.WriteLine( $"The first fighter dealt damage - {firstFighterDamage}. The second fighter received damage - {receivedBySecondFighterDamage}." );
             int secondFighterDamage = fighter2.CalculateDamage();
             int receivedByFirstFighterDamage = fighter1.TakeDamage( secondFighterDamage );
+
             if ( !fighter1.IsAlive() )
             {
                 Console.WriteLine( $"The first fighter {fighter1.Name}. DEAD " );
                 hasWinner = true;
                 continue;
             }
+
             Console.WriteLine( $"The second fighter dealt damage - {secondFighterDamage}. The first fighter received damage - {receivedByFirstFighterDamage}." );
         }
     }
 
-    private IFighter GetFighterWithType( IRace race, string name )
+    private IClass GetFighterClass()
     {
         const string listOfFighterTypesMsg = """
         Fighters class
@@ -92,16 +88,16 @@ public class FighterController : IFighterController
         {
             Console.WriteLine( listOfFighterTypesMsg );
 
-            string? str = Console.ReadLine();
+            string? classCommand = Console.ReadLine();
 
-            switch ( str )
+            switch ( classCommand )
             {
                 case "1":
-                    return new Knight( race, name );
+                    return new Knight();
                 case "2":
-                    return new Barbarian( race, name );
+                    return new Barbarian();
                 case "3":
-                    return new Rogue( race, name );
+                    return new Rogue();
                 default:
                     Console.WriteLine( "invalid command" );
                     break;
@@ -115,15 +111,15 @@ public class FighterController : IFighterController
 
         while ( true )
         {
-            string? str = Console.ReadLine();
+            string? fighterName = Console.ReadLine();
 
-            if ( str == null && string.IsNullOrWhiteSpace( str ) )
+            if ( fighterName == null && string.IsNullOrWhiteSpace( fighterName ) )
             {
                 Console.WriteLine( "Invalid name" );
                 continue;
             }
 
-            return str.Trim();
+            return fighterName.Trim();
         }
     }
 
@@ -141,8 +137,8 @@ public class FighterController : IFighterController
         while ( true )
         {
             Console.WriteLine( listOfRacesMsg );
-            string? str = Console.ReadLine();
-            switch ( str )
+            string? raceCommand = Console.ReadLine();
+            switch ( raceCommand )
             {
                 case "1":
                     return new Human();
@@ -171,8 +167,8 @@ public class FighterController : IFighterController
         while ( true )
         {
             Console.WriteLine( listOfRacesMsg );
-            string? str = Console.ReadLine();
-            switch ( str )
+            string? armorCommand = Console.ReadLine();
+            switch ( armorCommand )
             {
                 case "1":
                     return new WoodArmor();
@@ -201,8 +197,8 @@ public class FighterController : IFighterController
         while ( true )
         {
             Console.WriteLine( listOfRacesMsg );
-            string? str = Console.ReadLine();
-            switch ( str )
+            string? weaponCommand = Console.ReadLine();
+            switch ( weaponCommand )
             {
                 case "1":
                     return new Mace();
@@ -219,13 +215,12 @@ public class FighterController : IFighterController
 
     private IFighter GetFighter()
     {
-        Console.Write( "Choose number of your fighter: " );
+        Console.Write( "Choose number of your fighter (start from 0): " );
 
         while ( true )
         {
-            string? str = Console.ReadLine();
-            int index = 0;
-            if ( !int.TryParse( str, out index ) )
+            string? fighterIndex = Console.ReadLine();
+            if ( !int.TryParse( fighterIndex, out int index ) )
             {
                 Console.WriteLine( "Incorrect input, try again" );
                 continue;

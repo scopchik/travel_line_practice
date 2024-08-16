@@ -5,7 +5,7 @@ namespace Fighters.Controller;
 public interface IFighterController
 {
     public List<IFighter> GetFighters();
-    public IFighter CreateFighter();
+    public void CreateFighter();
     public void Fight();
     public void Clear();
 }

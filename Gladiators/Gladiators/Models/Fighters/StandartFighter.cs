@@ -1,38 +1,33 @@
 ﻿namespace Fighters.Models.Fighters;
-public abstract class StandartFighter : IFighter
-{
-    private string _name;
-    private readonly IRace _race;
-    private IArmor _armor = new NoArmor();
-    private IWeapon _weapon = new Fists();
-    
 
-    public StandartFighter( IRace race, string name )
+public class StandartFighter : IFighter
+{
+    public string Name { get; private set; }
+    public IRace Race { get; private init; }
+    public IArmor Armor { get; set; } = new NoArmor();
+    public IWeapon Weapon { get; set; } = new Fists();
+    public IClass Class { get; private set; }
+
+    public StandartFighter( string name, IRace race, IClass fightersClass, IArmor armor, IWeapon weapon )
     {
-        _race = race;
-        _name = name;
-        CurrentHealth = this.MaxHealth;
+        Race = race;
+        Name = name;
+        Class = fightersClass;
+        Armor = armor;
+        Weapon = weapon;
+        CurrentHealth = MaxHealth;
     }
 
-    public string Name => _name;
-    public IWeapon Weapon => _weapon;
-    public IArmor Armor => _armor;
-    public IRace Race => _race;
-
-    public abstract string Class { get; }
-    public abstract int ClassDamage { get; }
-    public abstract int ClassHealth { get; }
-
-    public int MaxHealth => _race.Health + ClassHealth;
+    public int MaxHealth => Race.Health + Class.Health;
     public int CurrentHealth { get; private set; }
 
     public void SetArmor( IArmor armor )
     {
-        _armor = armor;
+        Armor = armor;
     }
     public void SetWeapon( IWeapon weapon )
     {
-        _weapon = weapon;
+        Weapon = weapon;
     }
 
     public int CalculateDamage()
@@ -41,7 +36,7 @@ public abstract class StandartFighter : IFighter
         const int MinExtraDamage = -20;
         const int MaxExtraDamage = 10;
 
-        int fighterDamage = _race.Damage + ClassDamage + _armor.Armor;
+        int fighterDamage = Race.Damage + Class.Damage + Armor.Armor;
         double extraDamage = rand.Next( MinExtraDamage, MaxExtraDamage ) / 100 * fighterDamage;
 
         fighterDamage += ( int )extraDamage;
@@ -51,7 +46,7 @@ public abstract class StandartFighter : IFighter
 
     public int CalculateArmor()
     {
-        return _race.Armor + _armor.Armor;
+        return Race.Armor + Armor.Armor;
     }
 
     public int TakeDamage( int damage )
@@ -72,5 +67,13 @@ public abstract class StandartFighter : IFighter
 
         CurrentHealth -= receivedDamage;
         return receivedDamage;
+    }
+
+    public override string ToString()
+    {
+        return $"{Name} - {Class.Name} of {Race.Race} race\n" +
+               $"Health: {CurrentHealth}/{MaxHealth}\n" +
+               $"Armor: {Armor.Name} ({CalculateArmor()})\n" +
+               $"Weapon: {Weapon.Name} (Damage: {CalculateDamage()})";
     }
 }
