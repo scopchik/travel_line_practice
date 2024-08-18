@@ -39,10 +39,9 @@ namespace CarFactory
         private void PrintMenu()
         {
             Console.WriteLine( "Menu:" );
-            Console.WriteLine( "    1 - Create new car" );
-            Console.WriteLine( "    2 - Print all car" );
-            Console.WriteLine( "    3 - Remove car" );
-            Console.WriteLine( "    4 - Exit" );
+            Console.WriteLine( "1 - Create new car" );
+            Console.WriteLine( "2 - Print all car" );
+            Console.WriteLine( "3 - Remove car" );
         }
 
         private void ProcessCommand( string userCommand )
@@ -58,10 +57,9 @@ namespace CarFactory
                 case "3":
                     RemoveCar();
                     break;
-                case "4":
-                    break;
                 default:
-                    throw new ArgumentException( "Unknown command" );
+                    Console.WriteLine( "Unknown command" );
+                    break;
             }
         }
 
@@ -96,95 +94,72 @@ namespace CarFactory
 
             return name;
         }
-        private IEngine GetEngineFromInput()
+        private static IEngine GetEngineFromInput()
         {
-            Console.WriteLine( "Select engine:" );
-            Console.WriteLine( "Rotary" );
-            Console.WriteLine( "Enline" );
-            Console.WriteLine( "V type" );
+            EngineFactory.PrintAvailableEngines();
 
             while ( true )
             {
-                switch ( Console.ReadLine() )
+                try
                 {
-                    case "Rotary":
-                        return new RotaryEngine();
-                    case "Enline":
-                        return new EnlineEngine();
-                    case "V type":
-                        return new VTypeEngine();
-                    default:
-                        Console.WriteLine( "Unknown engine. Please try again" );
-                        break;
+                    string input = Console.ReadLine();
+                    return EngineFactory.CreateEngine( input );
+                }
+                catch ( ArgumentException ex )
+                {
+                    Console.WriteLine( ex.Message + " Please try again." );
                 }
             }
         }
-        private ITransmission GetTransmissionFromInput()
+
+        private static ITransmission GetTransmissionFromInput()
         {
-            Console.WriteLine( "Select transmission:" );
-            Console.WriteLine( "Automatic" );
-            Console.WriteLine( "Manual" );
-            Console.WriteLine( "Powerfull manual" );
+            TransmissionFactory.PrintAvailableTransmissions();
 
             while ( true )
             {
-                switch ( Console.ReadLine() )
+                try
                 {
-                    case "Automatic":
-                        return new AutomaticlTransmission();
-                    case "Manual":
-                        return new ManualTransmission();
-                    case "Powerfull manual":
-                        return new PowerfullManualTransmission();
-                    default:
-                        Console.WriteLine( "Unknown transmission. Please try again" );
-                        break;
+                    string input = Console.ReadLine();
+                    return TransmissionFactory.CreateTransmission( input );
+                }
+                catch ( ArgumentException ex )
+                {
+                    Console.WriteLine( ex.Message + " Please try again." );
                 }
             }
         }
-        private IBodyShape GetBodyShapeFromInput()
+        private static IBodyShape GetBodyShapeFromInput()
         {
-            Console.WriteLine( "Select body shape:" );
-            Console.WriteLine( "Hatchback" );
-            Console.WriteLine( "Sedan" );
-            Console.WriteLine( "Universal" );
+            BodyShapeFactory.PrintAvailableBodyShapes();
 
             while ( true )
             {
-                switch ( Console.ReadLine() )
+                try
                 {
-                    case "Hatchback":
-                        return new Hatchback();
-                    case "Sedan":
-                        return new Sedan();
-                    case "Universal":
-                        return new Universal();
-                    default:
-                        Console.WriteLine( "Unknown body shape. Please try again" );
-                        break;
+                    string input = Console.ReadLine();
+                    return BodyShapeFactory.CreateBodyShape( input );
+                }
+                catch ( ArgumentException ex )
+                {
+                    Console.WriteLine( ex.Message + " Please try again." );
                 }
             }
         }
-        private ICarColor GetCarColorFromInput()
+        private static ICarColor GetCarColorFromInput()
         {
-            Console.WriteLine( "Select color:" );
-            Console.WriteLine( "Black" );
-            Console.WriteLine( "Silver" );
-            Console.WriteLine( "White" );
+            ColorFactory.PrintAvailableColors();
 
             while ( true )
             {
-                switch ( Console.ReadLine() )
+                try
                 {
-                    case "Black":
-                        return new Black();
-                    case "Silver":
-                        return new Silver();
-                    case "White":
-                        return new White();
-                    default:
-                        Console.WriteLine( "Unknown color. Please try again" );
-                        break;
+                    string input = Console.ReadLine();
+                    return ColorFactory.CreateColor( input );
+                }
+                catch ( ArgumentException ex )
+                {
+                    Console.WriteLine( ex.Message + " Please try again." );
                 }
             }
         }
@@ -210,16 +185,24 @@ namespace CarFactory
         private void RemoveCar()
         {
             PrintAllCars();
-            Console.WriteLine( "Enter name of car" );
-            string name = Console.ReadLine();
-            var car = _cars.FirstOrDefault( c => c.Name == name );
-            if ( car == null )
+            Console.WriteLine( "Enter number of car (start from 0)" );
+            if ( int.TryParse( Console.ReadLine(), out int index ) )
             {
-                throw new ArgumentException( $"Car with name: {name} not found" );
+                if ( index >= 0 && index < _cars.Count )
+                {
+                    var carToRemove = _cars[ index ];
+                    _cars.RemoveAt( index );
+                    Console.WriteLine( $"Car '{carToRemove.Name}' was removed." );
+                }
+                else
+                {
+                    Console.WriteLine( "Invalid index. No car removed." );
+                }
             }
-
-            _cars.Remove( car );
-            Console.WriteLine( "Car was removed" );
+            else
+            {
+                Console.WriteLine( "Invalid input. Please enter a number." );
+            }
         }
     }
 }
