@@ -1,9 +1,11 @@
 export class Card {
+    id: number;
     foreignWord: string;
     translation: string;
     isLearned: boolean = false;
 
-    constructor(foreignWord: string, translation: string) {
+    constructor(id: number, foreignWord: string, translation: string) {
+        this.id = id;
         this.foreignWord = foreignWord;
         this.translation = translation;
     }
