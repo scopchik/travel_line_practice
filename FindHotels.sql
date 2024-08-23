@@ -1,25 +1,25 @@
---поиск доступных комнат
-SELECT * FROM dbo.Rooms
-WHERE room_id in(
-	select room_id from dbo.Bookings
-	where availability = 'true' and check_in_date <= '2024-07-22');
+--пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+SELECT * FROM Rooms
+WHERE room_id NOT IN (
+    SELECT room_id FROM Bookings
+    WHERE GETDATE() NOT BETWEEN check_in_date AND check_out_date 
+) AND availability = 1;
 
-
---поиск бронирований по фамилии
+--пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 SELECT * FROM dbo.Customers
 WHERE last_name LIKE 'S%';
 
---поиск бронирования с определенным именем 
+--пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 SELECT * FROM dbo.Bookings B
 JOIN dbo.Customers C ON B.customer_id = C.customer_id
 WHERE C.first_name = 'Anatoly';
 
---поиск определенной комнаты
+--пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 SELECT * FROM dbo.bookings
 JOIN dbo.rooms ON bookings.room_id = rooms.room_id
 WHERE rooms.room_number = 30;
 
---поиск незаброннированной комнаты в определенные даты
+--пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 SELECT * FROM dbo.rooms
 WHERE room_id IN (
 	SELECT room_id FROM dbo.bookings
