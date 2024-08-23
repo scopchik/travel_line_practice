@@ -4,6 +4,7 @@ WHERE room_id in(
 	select room_id from dbo.Bookings
 	where availability = 'true' and check_in_date <= '2024-07-22');
 
+
 --поиск бронирований по фамилии
 SELECT * FROM dbo.Customers
 WHERE last_name LIKE 'S%';
@@ -22,4 +23,4 @@ WHERE rooms.room_number = 30;
 SELECT * FROM dbo.rooms
 WHERE room_id IN (
 	SELECT room_id FROM dbo.bookings
-	WHERE ((check_in_date < '2024-07-3') and (check_out_date > '2024-07-13')) and availability = 'true');
+	WHERE ((check_in_date < '2024-07-3') OR (check_out_date > '2024-07-13')) and availability = 'true');
