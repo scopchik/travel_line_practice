@@ -1,51 +1,51 @@
-import { StudySession } from '../Entities/StudySession';
-import { Deck } from '../Entities/Deck';
-import { Card } from '../Entities/Card';
+import { createStudySession, takeCard, submitTranslation } from '../Entities/StudySession';
+import { createDeck, addCard } from '../Entities/Deck';
 
 describe('StudySession', () => {
-    let deck: Deck;
-    let studySession: StudySession;
+    it('should create a new study session with a shuffled deck', () => {
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'apple', 'яблоко');
+        deck = addCard(deck, 'orange', 'апельсин');
 
-    beforeEach(() => {
-        deck = new Deck('Test Deck');
-        deck.addCard('Hello', 'Привет');
-        deck.addCard('Cat', 'Кот');
-        studySession = new StudySession(deck);
+        const session = createStudySession(deck);
+        expect(session.deck.cards).toHaveLength(2);
+        expect(session.currentCard).toBe(null);
     });
 
-    it('should start a study session', () => {
-        studySession.startSession();
-        expect(studySession.deck.cards.length).toBe(2);
-    });
+    it('should take the first card from the deck', () => {
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'apple', 'яблоко');
+        deck = addCard(deck, 'orange', 'апельсин');
 
-    it('should take a card from the deck', () => {
-        studySession.startSession();
-        const card = studySession.takeCard();
-        expect(card).toBeDefined();
-        expect(studySession.currentCard).toBe(card);
+        const session = createStudySession(deck);
+        const { session: updatedSession, card } = takeCard(session);
+        expect(card).not.toBe(null);
+        expect(updatedSession.deck.cards).toHaveLength(1);
     });
 
     it('should submit correct translation', () => {
-        studySession.startSession();
-        studySession.takeCard();
-        const result = studySession.submitTranslation('Привет');
-        expect(result).toBe(true);
-        expect(studySession.correctAttempts).toBe(1);
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'apple', 'яблоко');
+
+        const session = createStudySession(deck);
+        const { session: updatedSession, card } = takeCard(session);
+        const { session: sessionAfterSubmit, isCorrect } = submitTranslation(updatedSession, 'яблоко');
+
+        expect(isCorrect).toBe(true);
+        expect(sessionAfterSubmit.correctAttempts).toBe(1);
+        expect(sessionAfterSubmit.currentCard?.isLearned).toBe(true);
     });
 
     it('should submit incorrect translation', () => {
-        studySession.startSession();
-        studySession.takeCard();
-        const result = studySession.submitTranslation('Неверный перевод');
-        expect(result).toBe(false);
-        expect(studySession.incorrectAttempts).toBe(1);
-    });
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'apple', 'яблоко');
 
-    it('should return null when taking a card if deck is empty', () => {
-        studySession.startSession();
-        studySession.takeCard();
-        studySession.takeCard();
-        const card = studySession.takeCard();
-        expect(card).toBeNull();
+        const session = createStudySession(deck);
+        const { session: updatedSession, card } = takeCard(session);
+        const { session: sessionAfterSubmit, isCorrect } = submitTranslation(updatedSession, 'неправильный перевод');
+
+        expect(isCorrect).toBe(false);
+        expect(sessionAfterSubmit.incorrectAttempts).toBe(1);
+        expect(sessionAfterSubmit.currentCard?.isLearned).toBe(false);
     });
 });

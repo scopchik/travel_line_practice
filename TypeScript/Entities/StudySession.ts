@@ -1,47 +1,59 @@
-import { Deck } from './Deck';
-import { Card } from './Card';
+import { Deck, Card } from './Deck';
 
-export class StudySession {
+export type StudySession = {
     deck: Deck;
-    currentCard: Card | null = null;
-    correctAttempts: number = 0;
-    incorrectAttempts: number = 0;
+    currentCard: Card | null;
+    correctAttempts: number;
+    incorrectAttempts: number;
+};
 
-    constructor(deck: Deck) {
-        this.deck = deck;
+export function createStudySession(deck: Deck): StudySession {
+    return {
+        deck: { ...deck, cards: shuffle(deck.cards) }, // Перемешиваем карты в начале сессии
+        currentCard: null,
+        correctAttempts: 0,
+        incorrectAttempts: 0,
+    };
+}
+
+export function takeCard(session: StudySession): { session: StudySession; card: Card | null } {
+    const [nextCard, ...remainingCards] = session.deck.cards;
+
+    return {
+        session: {
+            ...session,
+            deck: { ...session.deck, cards: remainingCards },
+            currentCard: nextCard || null,
+        },
+        card: nextCard || null,
+    };
+}
+
+export function submitTranslation(session: StudySession, translation: string): { session: StudySession; isCorrect: boolean } {
+    if (!session.currentCard) {
+        return { session, isCorrect: false };
     }
 
-    startSession(): void {
-        this.deck.cards = this.shuffle(this.deck.cards);
-    }
+    const isCorrect = translation === session.currentCard.translation;
 
-    takeCard(): Card | null {
-        if (this.deck.cards.length > 0) {
-            this.currentCard = this.deck.cards.shift()!;
-            return this.currentCard;
-        }
-        return null;
-    }
+    const updatedSession = {
+        ...session,
+        correctAttempts: session.correctAttempts + (isCorrect ? 1 : 0),
+        incorrectAttempts: session.incorrectAttempts + (!isCorrect ? 1 : 0),
+        currentCard: {
+            ...session.currentCard,
+            isLearned: isCorrect ? true : session.currentCard.isLearned, // Обновляем статус "изучено"
+        },
+    };
 
-    submitTranslation(translation: string): boolean {
-        if (this.currentCard) {
-            if (translation === this.currentCard.translation) {
-                this.correctAttempts++;
-                this.currentCard.isLearned = true;
-                return true;
-            } else {
-                this.incorrectAttempts++;
-                return false;
-            }
-        }
-        return false;
-    }
+    return { session: updatedSession, isCorrect };
+}
 
-    private shuffle(array: Card[]): Card[] {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
+export function shuffle(array: Card[]): Card[] {
+    const shuffledArray = [...array];
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
     }
+    return shuffledArray;
 }

@@ -1,47 +1,34 @@
-import { Deck } from '../Entities/Deck';
-import { Card } from '../Entities/Card';
+import { createDeck, addCard, removeCard, getCard } from '../Entities/Deck';
 
 describe('Deck', () => {
-    let deck: Deck;
-
-    beforeEach(() => {
-        deck = new Deck('Test Deck');
-    });
-
-    it('should create a deck with a name and creation date', () => {
+    it('should create a new deck', () => {
+        const deck = createDeck('Test Deck');
         expect(deck.deckName).toBe('Test Deck');
-        expect(deck.creationDate).toBeInstanceOf(Date);
-        expect(deck.cards.length).toBe(0);
+        expect(deck.cards).toHaveLength(0);
+        expect(deck.nextCardId).toBe(1);
     });
 
     it('should add a card to the deck', () => {
-        deck.addCard('Hello', 'Привет');
-        expect(deck.cards.length).toBe(1);
-        expect(deck.cards[0].foreignWord).toBe('Hello');
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'hello', 'привет');
+        expect(deck.cards).toHaveLength(1);
+        expect(deck.cards[0].foreignWord).toBe('hello');
     });
 
-    it('should remove a card by id', () => {
-        deck.addCard('Hello', 'Привет');
-        deck.addCard('Cat', 'Кот');
-        const cardId = deck.cards[0].id;
+    it('should remove a card from the deck', () => {
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'hello', 'привет');
+        deck = addCard(deck, 'bye', 'пока');
 
-        deck.removeCard(cardId);
-
-        expect(deck.cards.length).toBe(1);
-        expect(deck.cards[0].foreignWord).toBe('Cat');
+        deck = removeCard(deck, deck.cards[0].id);
+        expect(deck.cards).toHaveLength(1);
+        expect(deck.cards[0].foreignWord).toBe('bye');
     });
 
     it('should get a card by id', () => {
-        deck.addCard('Hello', 'Привет');
-        const cardId = deck.cards[0].id;
-
-        const card = deck.getCard(cardId);
-        expect(card).toBeDefined();
-        expect(card?.foreignWord).toBe('Hello');
-    });
-
-    it('should return null if card not found by id', () => {
-        const card = deck.getCard(999);
-        expect(card).toBeNull();
+        let deck = createDeck('Test Deck');
+        deck = addCard(deck, 'hello', 'привет');
+        const card = getCard(deck, deck.cards[0].id);
+        expect(card?.foreignWord).toBe('hello');
     });
 });

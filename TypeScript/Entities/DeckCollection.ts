@@ -1,17 +1,29 @@
 import { Deck } from './Deck';
 
-export class DeckCollection {
-    private decks: Deck[] = [];
+export type DeckCollection = {
+    decks: Deck[];
+};
 
-    addDeck(deck: Deck): void {
-        this.decks.push(deck);
-    }
+export function createDeckCollection(): DeckCollection {
+    return {
+        decks: []
+    };
+}
 
-    removeDeck(deckName: string): void {
-        this.decks = this.decks.filter(deck => deck.deckName !== deckName);
-    }
+export function addDeck(collection: DeckCollection, deck: Deck): DeckCollection {
+    return {
+        ...collection,
+        decks: [...collection.decks, deck]
+    };
+}
 
-    getDeck(deckName: string): Deck | null {
-        return this.decks.find(deck => deck.deckName === deckName) || null;
-    }
+export function removeDeck(collection: DeckCollection, deckName: string): DeckCollection {
+    return {
+        ...collection,
+        decks: collection.decks.filter(deck => deck.deckName !== deckName)
+    };
+}
+
+export function getDeck(collection: DeckCollection, deckName: string): Deck | null {
+    return collection.decks.find(deck => deck.deckName === deckName) || null;
 }

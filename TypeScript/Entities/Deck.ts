@@ -1,26 +1,48 @@
-import { Card } from './Card';
+export type Card = {
+    id: number;
+    foreignWord: string;
+    translation: string;
+    isLearned: boolean;
+};
 
-export class Deck {
+export type Deck = {
     deckName: string;
     creationDate: Date;
-    cards: Card[] = [];
-    private nextCardId: number = 1; // Для генерации уникальных id карточек
+    cards: Card[];
+    nextCardId: number; 
+};
 
-    constructor(deckName: string) {
-        this.deckName = deckName;
-        this.creationDate = new Date();
-    }
+export function createDeck(deckName: string): Deck {
+    return {
+        deckName,
+        creationDate: new Date(),
+        cards: [],
+        nextCardId: 1,
+    };
+}
 
-    addCard(foreignWord: string, translation: string): void {
-        const card = new Card(this.nextCardId++, foreignWord, translation);
-        this.cards.push(card);
-    }
+export function addCard(deck: Deck, foreignWord: string, translation: string): Deck {
+    const newCard: Card = {
+        id: deck.nextCardId,
+        foreignWord,
+        translation,
+        isLearned: false
+    };
 
-    removeCard(id: number): void {
-        this.cards = this.cards.filter(card => card.id !== id);
-    }
+    return {
+        ...deck,
+        cards: [...deck.cards, newCard],
+        nextCardId: deck.nextCardId + 1
+    };
+}
 
-    getCard(id: number): Card | null {
-        return this.cards.find(card => card.id === id) || null;
-    }
+export function removeCard(deck: Deck, cardId: number): Deck {
+    return {
+        ...deck,
+        cards: deck.cards.filter(card => card.id !== cardId)
+    };
+}
+
+export function getCard(deck: Deck, cardId: number): Card | null {
+    return deck.cards.find(card => card.id === cardId) || null;
 }

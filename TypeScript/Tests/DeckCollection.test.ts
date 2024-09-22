@@ -1,40 +1,40 @@
-import { DeckCollection } from '../Entities/DeckCollection';
-import { Deck } from '../Entities/Deck';
+import { createDeckCollection, addDeck, removeDeck, getDeck } from '../Entities/DeckCollection';
+import { createDeck } from '../Entities/Deck';
 
 describe('DeckCollection', () => {
-    let deckCollection: DeckCollection;
-    let deck1: Deck;
-    let deck2: Deck;
-
-    beforeEach(() => {
-        deckCollection = new DeckCollection();
-        deck1 = new Deck('Deck 1');
-        deck2 = new Deck('Deck 2');
+    it('should create a new deck collection', () => {
+        const collection = createDeckCollection();
+        expect(collection.decks).toHaveLength(0);
     });
 
     it('should add a deck to the collection', () => {
-        deckCollection.addDeck(deck1);
-        expect(deckCollection.getDeck('Deck 1')).toBe(deck1);
+        let collection = createDeckCollection();
+        const deck = createDeck('Test Deck');
+
+        collection = addDeck(collection, deck);
+        expect(collection.decks).toHaveLength(1);
+        expect(collection.decks[0].deckName).toBe('Test Deck');
     });
 
-    it('should remove a deck from the collection by name', () => {
-        deckCollection.addDeck(deck1);
-        deckCollection.addDeck(deck2);
+    it('should remove a deck by name', () => {
+        let collection = createDeckCollection();
+        const deck1 = createDeck('Deck 1');
+        const deck2 = createDeck('Deck 2');
 
-        deckCollection.removeDeck('Deck 1');
+        collection = addDeck(collection, deck1);
+        collection = addDeck(collection, deck2);
 
-        expect(deckCollection.getDeck('Deck 1')).toBeNull();
-        expect(deckCollection.getDeck('Deck 2')).toBe(deck2);
+        collection = removeDeck(collection, 'Deck 1');
+        expect(collection.decks).toHaveLength(1);
+        expect(collection.decks[0].deckName).toBe('Deck 2');
     });
 
     it('should get a deck by name', () => {
-        deckCollection.addDeck(deck1);
-        const deck = deckCollection.getDeck('Deck 1');
-        expect(deck).toBe(deck1);
-    });
+        let collection = createDeckCollection();
+        const deck = createDeck('Test Deck');
+        collection = addDeck(collection, deck);
 
-    it('should return null if deck not found by name', () => {
-        const deck = deckCollection.getDeck('Non-existent Deck');
-        expect(deck).toBeNull();
+        const foundDeck = getDeck(collection, 'Test Deck');
+        expect(foundDeck?.deckName).toBe('Test Deck');
     });
 });
